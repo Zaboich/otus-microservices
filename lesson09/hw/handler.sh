@@ -17,13 +17,13 @@ while IFS= read -r line; do
   [ -z "$line" ] && break
 done
 
-if [ "$METHOD" = "GET" ] && { [ "$PATH" = "/test" ] || [ "$PATH" = "/test/" ]; }; then
+if [ "$METHOD" = "GET" ] && { [ "$PATH" = "/health" ] || [ "$PATH" = "/health/" ]; }; then
   code="200 OK"
-  body='OK'
+  body=' {"status": "OK"}'
 else
   code="404 Not Found"
-  body='Not Found'
+  body=' {"status": "Not Found"}'
 fi
 
-printf 'HTTP/1.1 %s\r\nContent-Type: text/plain\r\nContent-Length: %d\r\nConnection: close\r\n\r\n%s' \
+printf 'HTTP/1.1 %s\r\nContent-Type: application/json\r\nContent-Length: %d\r\nConnection: close\r\n\r\n%s' \
   "$code" "${#body}" "$body"
