@@ -1,0 +1,55 @@
+# === Deployment: emptyDir / hostPath / PVC ===
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: volume-demo
+  namespace: k8s4-storage
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: volume-demo
+  template:
+    metadata:
+      labels:
+        app: volume-demo
+    spec:
+      terminationGracePeriodSeconds: 1
+      containers:
+        - name: writer
+          image: busybox:1.37.0
+          command: ["sleep", "86400"]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 128Mi
+          volumeMounts:
+            - name: data
+              mountPath: /cache1
+        - name: reader
+          image: busybox:1.37.0
+          command: ["sleep", "86400"]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 128Mi
+          volumeMounts:
+            - name: data
+              mountPath: /cache2
+      volumes:
+        - name: data
+          # Активен ровно один из трех источников.
+          emptyDir: {}
+          # Для опыта с tmpfs замените строку выше на:
+          # emptyDir:
+          #   medium: Memory
+          #   sizeLimit: 32Mi
+          # hostPath:
+          #   path: /data/k8s4-storage/shared
+          #   type: DirectoryOrCreate
+          # persistentVolumeClaim:
+          #   claimName: demo-claim

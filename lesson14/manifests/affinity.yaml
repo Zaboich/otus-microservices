@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spread-demo
+  namespace: lab-k8s-5
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: spread-demo
+  template:
+    metadata:
+      labels:
+        app: spread-demo
+    spec:
+      terminationGracePeriodSeconds: 2
+      affinity:
+        # Для совместного размещения замените podAntiAffinity на podAffinity.
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: spread-demo
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: worker
+          image: busybox:1.36.1
+          command: [sh, -c]
+          args: ['exec sleep 3600']
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi

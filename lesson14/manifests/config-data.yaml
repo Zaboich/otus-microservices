@@ -1,0 +1,23 @@
+# === ConfigMap: активна на всех этапах ===
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-settings
+  namespace: lab-k8s-5
+data:
+  server.url: https://service-v1.example.invalid
+  db.url: postgres://db-v1.example.invalid:5432/demo
+  app.conf: |
+    server_url=https://service-v1.example.invalid
+    db_url=postgres://db-v1.example.invalid:5432/demo
+---
+# === Secret: активен на всех этапах; исключительно вымышленные данные ===
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-credentials
+  namespace: lab-k8s-5
+type: Opaque
+stringData:
+  username: demo-user
+  password: demo-only-v1

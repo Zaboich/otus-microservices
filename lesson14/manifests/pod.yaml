@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: probe
+  namespace: lab-k8s-5
+  labels:
+    app: probe
+spec:
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 2
+  # Для размещения замените restartPolicy на Always, args на exec sleep 3600.
+  # SELECTOR: включайте только для соответствующего опыта.
+  # nodeSelector:
+  #   lab.example/disk: ssd
+  # REQUIRED: альтернатива SELECTOR и PREFERRED.
+  # affinity:
+  #   nodeAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       nodeSelectorTerms:
+  #         - matchExpressions:
+  #             - key: lab.example/disk
+  #               operator: In
+  #               values: [ssd]
+  # PREFERRED: альтернатива SELECTOR и REQUIRED.
+  # affinity:
+  #   nodeAffinity:
+  #     preferredDuringSchedulingIgnoredDuringExecution:
+  #       - weight: 100
+  #         preference:
+  #           matchExpressions:
+  #             - key: lab.example/disk
+  #               operator: In
+  #               values: [ssd]
+  # TOLERATION: включайте вместе с SELECTOR для опыта с taint.
+  # tolerations:
+  #   - key: lab.example/dedicated
+  #     operator: Equal
+  #     value: lesson
+  #     effect: NoSchedule
+  containers:
+    - name: worker
+      image: busybox:1.36.1
+      command: [sh, -c]
+      args: ['echo start; sleep 3; echo done; exit 0']
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          cpu: 100m
+          memory: 64Mi

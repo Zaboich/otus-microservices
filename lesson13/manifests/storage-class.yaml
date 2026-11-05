@@ -1,0 +1,8 @@
+# === StorageClass: выделенный класс, standard не меняем ===
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: k8s4-delayed
+provisioner: k8s.io/minikube-hostpath
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer

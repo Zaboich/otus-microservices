@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kuber-config
+  namespace: default
+data:
+  default.conf: |
+    server {
+        listen 8000;
+        server_name _;
+        default_type text/plain;
+        add_header Cache-Control "no-store" always;
+
+        location / {
+            return 200 "Hello from Kubernetes!\nHostname: $hostname\nPath: $request_uri\n";
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuber
+  namespace: default
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: kuber
+  template:
+    metadata:
+      labels:
+        app: kuber
+    spec:
+      containers:
+        - name: kuber
+          image: nginx:1.28.0-bookworm
+          ports:
+            - name: http
+              containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: kuber-config

@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-demo
+  namespace: lab-k8s-5
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: config-demo
+  template:
+    metadata:
+      labels:
+        app: config-demo
+    spec:
+      terminationGracePeriodSeconds: 2
+      containers:
+        - name: reader
+          image: busybox:1.36.1
+          command: [sh, -c]
+          args: ['exec sleep 3600']
+          env:
+            - name: SERVER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-settings
+                  key: server.url
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-settings
+                  key: db.url
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: app-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-credentials
+                  key: password
+          volumeMounts:
+            - name: settings
+              mountPath: /etc/demo
+              readOnly: true
+            - name: credentials
+              mountPath: /etc/credentials
+              readOnly: true
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+      volumes:
+        - name: settings
+          configMap:
+            name: app-settings
+            items:
+              - key: app.conf
+                path: app.conf
+        - name: credentials
+          secret:
+            secretName: app-credentials

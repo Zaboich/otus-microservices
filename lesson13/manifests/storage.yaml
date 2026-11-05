@@ -1,0 +1,46 @@
+# Включая/выключая секцию, переключайте также ее разделитель ---.
+# Заголовки # === ... === всегда остаются комментариями.
+# === PV ===
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: k8s4-static
+spec:
+  capacity:
+    storage: 3Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  hostPath:
+    path: /data/k8s4-storage/shared
+    type: DirectoryOrCreate
+
+# === PVC ===
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: demo-claim
+#   namespace: k8s4-storage
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   volumeMode: Filesystem
+#   storageClassName: ""
+#   resources:
+#     requests:
+#       storage: 5Gi
+
+# === Quota ===
+# ---
+# apiVersion: v1
+# kind: ResourceQuota
+# metadata:
+#   name: storage-quota
+#   namespace: k8s4-storage
+# spec:
+#   hard:
+#     requests.storage: 2Gi
+#     persistentvolumeclaims: "2"

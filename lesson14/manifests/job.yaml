@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: batch-demo
+  namespace: lab-k8s-5
+spec:
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  activeDeadlineSeconds: 300
+  # TTL: включите только в опыте с автоматической очисткой.
+  # ttlSecondsAfterFinished: 30
+  template:
+    metadata:
+      labels:
+        app: batch-demo
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 2
+      containers:
+        - name: worker
+          image: busybox:1.36.1
+          command: [sh, -c]
+          args: ['echo start; sleep 10; echo done; exit 0']
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
