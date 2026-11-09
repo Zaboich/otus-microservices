@@ -1,0 +1,42 @@
+# Правило 1: http://arch.homework/health -> сервис без изменения пути
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minimal-http-ingress
+  namespace: otus-microservices-12
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minimal-http-svc
+                port:
+                  number: 80
+---
+# Правило 2: /otusapp/{student_name}/{*} -> rewrite на /{*}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minimal-http-ingress-rewrite
+  namespace: otus-microservices-12
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - path: /otusapp/([^/]+)/(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: minimal-http-svc
+                port:
+                  number: 80

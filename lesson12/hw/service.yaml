@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minimal-http-svc
+  namespace: otus-microservices-12
+spec:
+  type: ClusterIP
+  selector:
+    app: minimal-http
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8000
+      protocol: TCP

@@ -25,5 +25,4 @@ else
   body=' {"status": "Not Found"}'
 fi
 
-printf 'HTTP/1.1 %s\r\nContent-Type: application/json\r\nContent-Length: %d\r\nConnection: close\r\n\r\n%s' \
-  "$code" "${#body}" "$body"
+printf 'HTTP/1.1 %s\r\nContent-Type: application/json\r\nContent-Length: %d\r\nConnection: close\r\n\r\n%s' "$code" "${#body}" "$body"
